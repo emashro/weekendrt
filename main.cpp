@@ -1,4 +1,5 @@
 #include <iostream>
+#include "vec3.h"
 
 int main()
 {
@@ -10,9 +11,10 @@ int main()
 			float r = float(i) / float(nx);
 			float g = float(j) / float(ny);
 			float b = 0.2f;
-			int ir = int(255.99f * r);
-			int ig = int(255.99f * g);
-			int ib = int(255.99f * b);
+			vec3 col(r, g, b);
+			int ir = int(255.99f * col[0]);
+			int ig = int(255.99f * col[1]);
+			int ib = int(255.99f * col[2]);
 			std::cout << ir << " " << ig << " " << ib << "\n";
 		}
 	}
