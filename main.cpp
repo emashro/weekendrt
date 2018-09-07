@@ -18,10 +18,9 @@ vec3 random_in_unit_sphere()
 
 vec3 color(const ray &r, hitable *world) {
 	hit_record rec;
-	if (world->hit(r, 0.0f, MAXFLOAT, rec)) {
+	if (world->hit(r, 0.001f, MAXFLOAT, rec)) {
 		vec3 target = rec.p + rec.normal + random_in_unit_sphere();
 		return 0.5f * color(ray(rec.p, target - rec.p), world);
-		//return 0.5f * vec3(rec.normal.x() + 1.0f, rec.normal.y() + 1.0f, rec.normal.z() + 1.0f);
 	} else {
 		vec3 unit_direction = unit_vector(r.direction());
 		float t = 0.5f * (unit_direction.y() + 1.0f);
