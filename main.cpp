@@ -50,6 +50,7 @@ int main()
 				col += color(r, world);
 			}
 			col /= float(ns);
+			col = vec3(sqrtf(col[0]), sqrtf(col[1]), sqrtf(col[2]));
 			int ir = int(255.99f * col[0]);
 			int ig = int(255.99f * col[1]);
 			int ib = int(255.99f * col[2]);
