@@ -23,6 +23,19 @@ vec3 reflect(const vec3 &v, const vec3 &n)
 	return v - 2.0f * dot(v, n) * n;
 }
 
+bool refract(const vec3 &v, const vec3 &n, float ni_over_nt, vec3 &refracted)
+{
+	vec3 uv = unit_vector(v);
+	float dt = dot(uv, n);
+	float discriminant = 1.0f - ni_over_nt * ni_over_nt * (1.0f - dt * dt);
+	if (discriminant > 0.0f) {
+		refracted = ni_over_nt * (uv - n * dt) - n * sqrtf(discriminant);
+		return true;
+	} else {
+		return false;
+	}
+}
+
 class material {
 public:
 	virtual bool scatter(const ray &r_in, const hit_record &rec, vec3 &attenuation, ray &scattered) const = 0;
@@ -47,10 +60,37 @@ public:
 		vec3 reflected = reflect(unit_vector(r_in.direction()), rec.normal);
 		scattered = ray(rec.p, reflected + fuzz * random_in_unit_sphere());
 		attenuation = albedo;
-		return dot(scattered.direction(), rec.normal) > 0;
+		return dot(scattered.direction(), rec.normal) > 0.0f;
 	}
 	vec3 albedo;
 	float fuzz;
+};
+
+class dielectric : public material {
+public:
+	dielectric(float ri) : ref_idx(ri) {}
+	virtual bool scatter(const ray &r_in, const hit_record &rec, vec3 &attenuation, ray &scattered) const {
+		vec3 outward_normal;
+		vec3 reflected = reflect(r_in.direction(), rec.normal);
+		float ni_over_nt;
+		attenuation = vec3(1.0f, 1.0f, 0.0f);
+		vec3 refracted;
+		if (dot(r_in.direction(), rec.normal) > 0.0f) {
+			outward_normal = -rec.normal;
+			ni_over_nt = ref_idx;
+		} else {
+			outward_normal = rec.normal;
+			ni_over_nt = 1.0f / ref_idx;
+		}
+		if (refract(r_in.direction(), outward_normal, ni_over_nt, refracted)) {
+			scattered = ray(rec.p, refracted);
+		} else {
+			scattered = ray(rec.p, reflected);
+			return false;
+		}
+		return true;
+	}
+	float ref_idx;
 };
 
 vec3 color(const ray &r, hitable *world, int depth)
@@ -78,10 +118,10 @@ int main()
 	int ns = 100;
 	std::cout << "P3\n" << nx << " " << ny << "\n255\n";
 	hitable *list[4];
-	list[0] = new sphere(vec3(0.0f, 0.0f, -1.0f), 0.5f, new lambertian(vec3(0.8f, 0.3f, 0.3f)));
+	list[0] = new sphere(vec3(0.0f, 0.0f, -1.0f), 0.5f, new lambertian(vec3(0.1f, 0.2f, 0.5f)));
 	list[1] = new sphere(vec3(0.0f, -100.5f, -1.0f), 100.0f, new lambertian(vec3(0.8f, 0.8f, 0.0f)));
-	list[2] = new sphere(vec3(1.0f, 0.0f, -1.0f), 0.5f, new metal(vec3(0.8f, 0.6f, 0.2f), 1.0f));
-	list[3] = new sphere(vec3(-1.0f, 0.0f, -1.0f), 0.5f, new metal(vec3(0.8f, 0.8f, 0.8f), 0.3f));
+	list[2] = new sphere(vec3(1.0f, 0.0f, -1.0f), 0.5f, new metal(vec3(0.8f, 0.6f, 0.2f), 0.3f));
+	list[3] = new sphere(vec3(-1.0f, 0.0f, -1.0f), 0.5f, new dielectric(1.5f));
 	hitable *world = new hitable_list(list, 4);
 	camera cam;
 	for (int j = ny - 1; j >= 0; j--) {
