@@ -66,6 +66,13 @@ public:
 	float fuzz;
 };
 
+float schlick(float cosine, float ref_idx)
+{
+	float r0 = (1.0f - ref_idx) / (1 + ref_idx);
+	r0 = r0 * r0;
+	return r0 + (1 - r0) * pow((1.0f - cosine), 5);
+}
+
 class dielectric : public material {
 public:
 	dielectric(float ri) : ref_idx(ri) {}
@@ -73,20 +80,29 @@ public:
 		vec3 outward_normal;
 		vec3 reflected = reflect(r_in.direction(), rec.normal);
 		float ni_over_nt;
-		attenuation = vec3(1.0f, 1.0f, 0.0f);
+		attenuation = vec3(1.0f, 1.0f, 1.0f);
 		vec3 refracted;
+		float reflect_prob;
+		float cosine;
 		if (dot(r_in.direction(), rec.normal) > 0.0f) {
 			outward_normal = -rec.normal;
 			ni_over_nt = ref_idx;
+			cosine = ref_idx * dot(r_in.direction(), rec.normal) / r_in.direction().length();
 		} else {
 			outward_normal = rec.normal;
 			ni_over_nt = 1.0f / ref_idx;
+			cosine = -dot(r_in.direction(), rec.normal) / r_in.direction().length();
 		}
 		if (refract(r_in.direction(), outward_normal, ni_over_nt, refracted)) {
-			scattered = ray(rec.p, refracted);
+			reflect_prob = schlick(cosine, ref_idx);
 		} else {
+			//scattered = ray(rec.p, reflected);
+			reflect_prob = 1.0f;
+		}
+		if (drand48() < reflect_prob) {
 			scattered = ray(rec.p, reflected);
-			return false;
+		} else {
+			scattered = ray(rec.p, refracted);
 		}
 		return true;
 	}
@@ -117,12 +133,13 @@ int main()
 	int ny = 100;
 	int ns = 100;
 	std::cout << "P3\n" << nx << " " << ny << "\n255\n";
-	hitable *list[4];
+	hitable *list[5];
 	list[0] = new sphere(vec3(0.0f, 0.0f, -1.0f), 0.5f, new lambertian(vec3(0.1f, 0.2f, 0.5f)));
 	list[1] = new sphere(vec3(0.0f, -100.5f, -1.0f), 100.0f, new lambertian(vec3(0.8f, 0.8f, 0.0f)));
 	list[2] = new sphere(vec3(1.0f, 0.0f, -1.0f), 0.5f, new metal(vec3(0.8f, 0.6f, 0.2f), 0.3f));
 	list[3] = new sphere(vec3(-1.0f, 0.0f, -1.0f), 0.5f, new dielectric(1.5f));
-	hitable *world = new hitable_list(list, 4);
+	list[4] = new sphere(vec3(-1.0f, 0.0f, -1.0f), -0.45f, new dielectric(1.5f));
+	hitable *world = new hitable_list(list, 5);
 	camera cam;
 	for (int j = ny - 1; j >= 0; j--) {
 		for (int i = 0; i < nx; i++) {
