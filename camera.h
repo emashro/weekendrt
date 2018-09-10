@@ -3,14 +3,7 @@
 #include "vec3.h"
 #include "ray.h"
 
-vec3 random_in_unit_disk()
-{
-	vec3 p;
-	do {
-		p = 2.0f * vec3(drand48(), drand48(), 0) - vec3(1.0f, 1.0f, 0.0f);
-	} while (dot(p, p) >= 1.0f);
-	return p;
-}
+vec3 random_in_unit_disk();
 
 class camera {
 public:
@@ -27,11 +20,13 @@ public:
 		horizontal = 2.0f * half_width * focus_dist * u;
 		vertical = 2.0f * half_height * focus_dist * v;
 	}
-	ray get_ray(float s, float t) {
+	ray get_ray(float s, float t) const {
 		vec3 rd = lens_radius * random_in_unit_disk();
 		vec3 offset = u * rd.x() + v * rd.y();
 		return ray(origin + offset, lower_left_corner + s * horizontal + t * vertical - origin - offset);
 	}
+
+private:
 	vec3 origin;
 	vec3 lower_left_corner;
 	vec3 horizontal;

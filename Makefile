@@ -1,7 +1,7 @@
 # Makefile
 
 PROGRAM = rt
-SRCS = main.cpp hitablelist.cpp sphere.cpp material.cpp
+SRCS = main.cpp hitablelist.cpp sphere.cpp material.cpp camera.cpp
 OBJS = $(SRCS:.cpp=.o)
 CPP = clang++
 CPPFLAGS = -Wall -O2
