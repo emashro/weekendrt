@@ -30,17 +30,17 @@ vec3 color(const ray &r, hitable *world, int depth)
 
 hitable *random_scene()
 {
-	int n = 500;
+	int n = 50000;
 	hitable **list = new hitable *[n + 1];
 	list[0] = new sphere(vec3(0.0f, -1000.0f, 0.0f), 1000.0f, new lambertian(vec3(0.5f, 0.5f, 0.5f)));
 	int i = 1;
-	for (int a = -11; a < 11; a++) {
-		for (int b = -11; b < 11; b++) {
+	for (int a = -10; a < 10; a++) {
+		for (int b = -10; b < 10; b++) {
 			float choose_mat = drand48();
 			vec3 center(a + 0.9f * drand48(), 0.2f, b + 0.9f + drand48());
 			if ((center - vec3(4.0f, 0.2f, 0.0f)).length() > 0.9f) {
 				if (choose_mat < 0.8f) { // diffuse
-					list[i++] = new sphere(center, 0.2f, new lambertian(vec3(drand48() * drand48(), drand48() * drand48(), drand48() * drand48())));
+					list[i++] = new moving_sphere(center, center + vec3(0.0f, 0.5f * drand48(), 0.0f), 0.0f, 1.0f, 0.2f, new lambertian(vec3(drand48() * drand48(), drand48() * drand48(), drand48() * drand48())));
 				} else if (choose_mat < 0.95f) { // metal
 					list[i++] = new sphere(center, 0.2f, new metal(vec3(0.5f * (1.0f + drand48()), 0.5f * (1.0f + drand48()), 0.5f * (1.0f + drand48())), 0.5 * drand48()));
 				} else { // glass
@@ -86,7 +86,7 @@ int main()
 	float dist_to_focus = 10.0f;
 	float aperture = 0.1f;
 #endif
-	camera cam(lookfrom, lookat, vec3(0.0f, 1.0f, 0.0f), 20.0f, float(nx) / float(ny), aperture, dist_to_focus);
+	camera cam(lookfrom, lookat, vec3(0.0f, 1.0f, 0.0f), 20.0f, float(nx) / float(ny), aperture, dist_to_focus, 0.0f, 1.0f);
 	for (int j = ny - 1; j >= 0; j--) {
 		for (int i = 0; i < nx; i++) {
 			vec3 col(0.0f, 0.0f, 0.0f);
