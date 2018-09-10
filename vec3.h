@@ -66,7 +66,7 @@ public:
 		return e[0] * e[0] + e[1] * e[1] + e[2] * e[2];
 	}
 	inline float length() const {
-		return sqrt(squared_length());
+		return sqrtf(squared_length());
 	}
 	inline void make_unit_vector();
 
