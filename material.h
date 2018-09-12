@@ -3,6 +3,7 @@
 #include "vec3.h"
 #include "ray.h"
 #include "hitable.h"
+#include "texture.h"
 
 vec3 random_in_unit_sphere();
 
@@ -17,11 +18,11 @@ public:
 
 class lambertian : public material {
 public:
-	lambertian(const vec3 &a) : albedo(a) {}
+	lambertian(const texture *a) : albedo(a) {}
 	virtual bool scatter(const ray &r_in, const hit_record &rec, vec3 &attenuation, ray &scattered) const;
 
 private:
-	vec3 albedo;
+	const texture *albedo;
 };
 
 class metal : public material {
