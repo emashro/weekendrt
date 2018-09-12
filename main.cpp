@@ -7,6 +7,7 @@
 #include "sphere.h"
 #include "hitable.h"
 #include "hitablelist.h"
+#include "bvh.h"
 #include "material.h"
 #include "camera.h"
 
@@ -52,7 +53,8 @@ hitable *random_scene()
 	list[i++] = new sphere(vec3(0.0f, 1.0f, 0.0f), 1.0f, new dielectric(1.5f));
 	list[i++] = new sphere(vec3(-4.0f, 1.0f, 0.0f), 1.0f, new lambertian(vec3(0.4f, 0.2f, 0.1f)));
 	list[i++] = new sphere(vec3(4.0f, 1.0f, 0.0f), 1.0f, new metal(vec3(0.7f, 0.6f, 0.5f), 0.0f));
-	return new hitable_list(list, i);
+	//return new hitable_list(list, i);
+	return new bvh_node(list, i, 0.0f, 1.0f);
 }
 
 int main()
