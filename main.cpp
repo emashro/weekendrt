@@ -40,6 +40,16 @@ hitable *two_spheres()
 	return new hitable_list(list, 2);
 }
 
+hitable *two_perlin_spheres()
+{
+	texture *pertext = new noise_texture();
+	hitable **list = new hitable*[2];
+	int i = 0;
+	list[i++] = new sphere(vec3(0.0f, -1000.0f, 0.0f), 1000.0f, new lambertian(pertext));
+	list[i++] = new sphere(vec3(0.0f, 2.0f, 0.0f), 2.0f, new lambertian(pertext));
+	return new hitable_list(list, i);
+}
+
 hitable *random_scene()
 {
 	int n = 50000;
@@ -94,9 +104,17 @@ int main()
 	float dist_to_focus = (lookfrom - lookat).length();
 	float aperture = 2.0f;
 #endif
-#if 1
+#if 0
 	//ns = 100;
 	hitable *world = two_spheres();
+	vec3 lookfrom(13.0f, 2.0f, 3.0f);
+	vec3 lookat(0.0f, 0.0f, 0.0f);
+	float dist_to_focus = 10.0f;
+	float aperture = 0.0f;
+#endif
+#if 1
+	//ns = 100;
+	hitable *world = two_perlin_spheres();
 	vec3 lookfrom(13.0f, 2.0f, 3.0f);
 	vec3 lookat(0.0f, 0.0f, 0.0f);
 	float dist_to_focus = 10.0f;
