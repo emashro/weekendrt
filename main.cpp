@@ -42,7 +42,7 @@ hitable *two_spheres()
 
 hitable *two_perlin_spheres()
 {
-	texture *pertext = new noise_texture();
+	texture *pertext = new noise_texture(4.0f);
 	hitable **list = new hitable*[2];
 	int i = 0;
 	list[i++] = new sphere(vec3(0.0f, -1000.0f, 0.0f), 1000.0f, new lambertian(pertext));
