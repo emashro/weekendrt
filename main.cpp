@@ -10,6 +10,8 @@
 #include "bvh.h"
 #include "material.h"
 #include "camera.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 vec3 color(const ray &r, hitable *world, int depth)
 {
@@ -27,6 +29,14 @@ vec3 color(const ray &r, hitable *world, int depth)
 		float t = 0.5f * (unit_direction.y() + 1.0f);
 		return (1.0f - t) * vec3(1.0f, 1.0f, 1.0f) + t * vec3(0.5f, 0.7f, 1.0f);
 	}
+}
+
+hitable *earth()
+{
+	int nx, ny, nn;
+	unsigned char *tex_data = stbi_load("earthmap.jpg", &nx, &ny, &nn, 0);
+	material *mat = new lambertian(new image_texture(tex_data, nx, ny));
+	return new sphere(vec3(0.0f, 0.0f, 0.0f), 2.0f, mat);
 }
 
 hitable *two_spheres()
@@ -104,6 +114,13 @@ int main()
 	float dist_to_focus = (lookfrom - lookat).length();
 	float aperture = 2.0f;
 #endif
+#if 1
+	hitable *world = earth();
+	vec3 lookfrom(13.0f, 2.0f, 3.0f);
+	vec3 lookat(0.0f, 0.0f, 0.0f);
+	float dist_to_focus = 10.0f;
+	float aperture = 0.0f;
+#endif
 #if 0
 	//ns = 100;
 	hitable *world = two_spheres();
@@ -112,7 +129,7 @@ int main()
 	float dist_to_focus = 10.0f;
 	float aperture = 0.0f;
 #endif
-#if 1
+#if 0
 	//ns = 100;
 	hitable *world = two_perlin_spheres();
 	vec3 lookfrom(13.0f, 2.0f, 3.0f);

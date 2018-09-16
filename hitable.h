@@ -6,10 +6,13 @@
 
 class material;
 
+void get_sphere_uv(const vec3 &p, float &u, float &v);
+
 struct hit_record {
 	float t;
 	vec3 p;
 	vec3 normal;
+	float u, v;
 	const material *mat_ptr;
 };
 
