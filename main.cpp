@@ -11,7 +11,6 @@
 #include "material.h"
 #include "camera.h"
 #include "rect.h"
-#define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
 vec3 color(const ray &r, hitable *world, int depth)
