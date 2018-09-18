@@ -77,6 +77,23 @@ hitable *two_perlin_spheres()
 	return new hitable_list(list, i);
 }
 
+hitable *cornell_box()
+{
+	hitable **list = new hitable *[6];
+	int i = 0;
+	material *red = new lambertian(new constant_texture(vec3(0.65f, 0.05f, 0.05f)));
+	material *white = new lambertian(new constant_texture(vec3(0.73f, 0.73f, 0.73f)));
+	material *green = new lambertian(new constant_texture(vec3(0.12f, 0.45f, 0.15f)));
+	material *light = new diffuse_light(new constant_texture(vec3(15.0f, 15.0f, 15.0f)));
+	list[i++] = new flip_normals(new yz_rect(0.0f, 555.0f, 0.0f, 555.0f, 555.0f, green));
+	list[i++] = new yz_rect(0.0f, 555.0f, 0.0f, 555.0f, 0.0f, red);
+	list[i++] = new xz_rect(213.0f, 343.0f, 227.0f, 332.0f, 554.0f, light);
+	list[i++] = new flip_normals(new xz_rect(0.0f, 555.0f, 0.0f, 555.0f, 555.0f, white));
+	list[i++] = new xz_rect(0.0f, 555.0f, 0.0f, 555.0f, 0.0f, white);
+	list[i++] = new flip_normals(new xy_rect(0.0f, 555.0f, 0.0f, 555.0f, 555.0f, white));
+	return new hitable_list(list, i);
+}
+
 hitable *random_scene()
 {
 	int n = 50000;
@@ -117,7 +134,6 @@ int main()
 	int ny = 800;
 	int ns = 10;
 #endif
-	std::cout << "P3\n" << nx << " " << ny << "\n255\n";
 #if 0
 	hitable *list[5];
 	list[0] = new sphere(vec3(0.0f, 0.0f, -1.0f), 0.5f, new lambertian(vec3(0.1f, 0.2f, 0.5f)));
@@ -131,12 +147,13 @@ int main()
 	float dist_to_focus = (lookfrom - lookat).length();
 	float aperture = 2.0f;
 #endif
-#if 1
+#if 0
 	hitable *world = simple_light();
 	vec3 lookfrom(13.0f * 2.0f, 2.0f * 2.0f, 3.0f * 2.0f);
 	vec3 lookat(0.0f, 2.0f, 0.0f);
 	float dist_to_focus = 10.0f;
 	float aperture = 0.0f;
+	float vfov = 20.0f;
 #endif
 #if 0
 	hitable *world = earth();
@@ -167,8 +184,21 @@ int main()
 	vec3 lookat(0.0f, 0.0f, 0.0f);
 	float dist_to_focus = 10.0f;
 	float aperture = 0.1f;
+	float vfov = 20.0f;
 #endif
-	camera cam(lookfrom, lookat, vec3(0.0f, 1.0f, 0.0f), 20.0f, float(nx) / float(ny), aperture, dist_to_focus, 0.0f, 1.0f);
+#if 1
+	nx = 512;
+	ny = 512;
+	ns = 1000;
+	hitable *world = cornell_box();
+	vec3 lookfrom(278.0f, 278.0f, -800.0f);
+	vec3 lookat(278.0f, 278.0f, 0.0f);
+	float dist_to_focus = 10.0f;
+	float aperture = 0.0f;
+	float vfov = 40.0f;
+#endif
+	camera cam(lookfrom, lookat, vec3(0.0f, 1.0f, 0.0f), vfov, float(nx) / float(ny), aperture, dist_to_focus, 0.0f, 1.0f);
+	std::cout << "P3\n" << nx << " " << ny << "\n255\n";
 	for (int j = ny - 1; j >= 0; j--) {
 		for (int i = 0; i < nx; i++) {
 			vec3 col(0.0f, 0.0f, 0.0f);
