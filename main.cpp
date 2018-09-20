@@ -11,6 +11,7 @@
 #include "material.h"
 #include "camera.h"
 #include "rect.h"
+#include "box.h"
 #include "stb_image.h"
 
 vec3 color(const ray &r, hitable *world, int depth)
@@ -78,7 +79,7 @@ hitable *two_perlin_spheres()
 
 hitable *cornell_box()
 {
-	hitable **list = new hitable *[6];
+	hitable **list = new hitable *[8];
 	int i = 0;
 	material *red = new lambertian(new constant_texture(vec3(0.65f, 0.05f, 0.05f)));
 	material *white = new lambertian(new constant_texture(vec3(0.73f, 0.73f, 0.73f)));
@@ -90,6 +91,8 @@ hitable *cornell_box()
 	list[i++] = new flip_normals(new xz_rect(0.0f, 555.0f, 0.0f, 555.0f, 555.0f, white));
 	list[i++] = new xz_rect(0.0f, 555.0f, 0.0f, 555.0f, 0.0f, white);
 	list[i++] = new flip_normals(new xy_rect(0.0f, 555.0f, 0.0f, 555.0f, 555.0f, white));
+	list[i++] = new translate(new rotate_y(new box(vec3(0.0f, 0.0f, 0.0f), vec3(165.0f, 165.0f, 165.0f), white), -18.0f), vec3(130.0f, 0.0f, 65.0f));
+	list[i++] = new translate(new rotate_y(new box(vec3(0.0f, 0.0f, 0.0f), vec3(165.0f, 330.0f, 165.0f), white),  15.0f), vec3(265.0f, 0.0f, 295.0f));
 	return new hitable_list(list, i);
 }
 
@@ -188,7 +191,7 @@ int main()
 #if 1
 	nx = 512;
 	ny = 512;
-	ns = 1000;
+	ns = 200;
 	hitable *world = cornell_box();
 	vec3 lookfrom(278.0f, 278.0f, -800.0f);
 	vec3 lookat(278.0f, 278.0f, 0.0f);
