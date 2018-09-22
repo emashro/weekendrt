@@ -27,6 +27,13 @@ bool refract(const vec3 &v, const vec3 &n, float ni_over_nt, vec3 &refracted)
 	}
 }
 
+bool isotropic::scatter(const ray &r_in, const hit_record &rec, vec3 &attenuation, ray &scattered) const
+{
+	scattered = ray(rec.p, random_in_unit_sphere());
+	attenuation = albedo->value(rec.u, rec.v, rec.p);
+	return true;
+}
+
 bool lambertian::scatter(const ray &r_in, const hit_record &rec, vec3 &attenuation, ray &scattered) const
 {
 	vec3 target = rec.p + rec.normal + random_in_unit_sphere();

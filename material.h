@@ -31,6 +31,15 @@ private:
 	texture *emit;
 };
 
+class isotropic : public material {
+public:
+	isotropic(texture *a) : albedo(a) {}
+	virtual bool scatter(const ray &r_in, const hit_record &rec, vec3 &attenuation, ray &scattered) const;
+
+private:
+	texture *albedo;
+};
+
 class lambertian : public material {
 public:
 	lambertian(const texture *a) : albedo(a) {}

@@ -42,7 +42,7 @@ public:
 	noise_texture(float sc) : scale(sc) {}
 	virtual vec3 value(float u, float v, const vec3 &p) const {
 		//return vec3(1.0f, 1.0f, 1.0f) * noise.turb(scale * p);
-		return vec3(1.0f, 1.0f, 1.0f) * 0.5f * (1.0f + sin(scale * p.z() + 10.0f * noise.turb(p)));
+		return vec3(1.0f, 1.0f, 1.0f) * 0.5f * (1.0f + sinf(scale * p.x() + 5.0f * noise.turb(scale * p)));
 	}
 private:
 	perlin noise;
